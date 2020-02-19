@@ -1,0 +1,23 @@
+body {
+background-color: #181818;
+}
+
+h1 {
+color: green;
+}
+
+button.dt-button {
+    color: green;
+    background-color: black;
+    border-color: #fff;
+    margin-bottom: 5px;
+}
+
+table.dataTable thead tr {
+    background-color: grey;
+}
+
+#pieLegend {
+    background-color: #181818;
+    color: white;
+}

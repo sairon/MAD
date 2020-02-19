@@ -45,7 +45,8 @@
             grid: {
                 hoverable: true,
                 borderWidth: 1,
-                backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
+                backgroundColor: { colors: ["#181818", "#181818"] },
+                borderColor: "#181818"
             },
             legend: {
                 container: $("#legendContainer_spawn"),
@@ -76,7 +77,8 @@
             grid: {
                 hoverable: true,
                 borderWidth: 2,
-                backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
+                backgroundColor: { colors: ["#181818", "#181818"] },
+                borderColor: "#181818"
             },
             legend: {
                 container: $("#legendContainer_quest"),
@@ -100,11 +102,9 @@
             legend: {
                 show: true,
                 labelFormatter: function (label, series) {
-                    return '<div id="legendContainer" style="color:black;">' +
-                        label + ' : ' +
-                        (series.data[0][1]) +
-                        '</div>';
-                }
+                    return label + ' : ' +(series.data[0][1]);
+                },
+                backgroundColor: "#181818"
             }
         };
 
@@ -181,7 +181,8 @@
                         grid: {
                             hoverable: true,
                             borderWidth: 2,
-                            backgroundColor: { colors: ["#ffffff", "#EDF5FF"] }
+                            backgroundColor: { colors: ["#181818", "#181818"] },
+                            borderColor: "#181818"
                         },
                         xaxis: {
                             mode: "time",
