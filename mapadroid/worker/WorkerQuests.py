@@ -109,6 +109,9 @@ class WorkerQuests(MITMBase):
 
         if self._level_mode:
             logger.info("Starting Level Mode")
+            # we wait a few seconds for getting stops to db (maybe we visit a fresh area)
+            logger.info("Sleeping 2 minutes for getting mitm data")
+            #time.sleep(120)
         else:
             # initial cleanup old quests
             if not self._init:
@@ -151,6 +154,8 @@ class WorkerQuests(MITMBase):
             self._communicator.set_location(
                 Location(self.current_location.lat, self.current_location.lng), 0)
             # the time we will take as a starting point to wait for data...
+            time.sleep(2)
+            # wait 2 seconds - teleport may be quick running
             cur_time = math.floor(time.time())
 
             delay_used = self.get_devicesettings_value('post_teleport_delay', 7)
@@ -433,6 +438,12 @@ class WorkerQuests(MITMBase):
         stop_inventory_clear = Event()
         stop_screen_clear = Event()
         logger.info('Cleanup Box')
+        # sleep for check_routepools thread
+        self._mapping_manager.routemanager_set_worker_sleeping(self._routemanager_name, self._origin, 300)
+        reached_main_menu = self._check_pogo_main_screen(10, True)
+        if not reached_main_menu:
+            if not self._restart_pogo(mitm_mapper=self._mitm_mapper):
+                raise InternalStopWorkerException
         not_allow = ('Gift', 'Geschenk', 'Glücksei', 'Glucks-Ei', 'Glücks-Ei', 'Lucky Egg', 'CEuf Chance',
                      'Cadeau', 'Appareil photo', 'Wunderbox', 'Mystery Box', 'Boîte Mystère', 'Premium',
                      'Raid', 'Teil',
@@ -782,7 +793,11 @@ class WorkerQuests(MITMBase):
                     logger.warning("Might have hit a spin limit for worker! We have spun: {} stops",
                                    self._mitm_mapper.get_poke_stop_visits(self._origin))
 
-                # self._close_gym(self._delay_add)
+                reached_main_menu = self._check_pogo_main_screen(10, True)
+                if not reached_main_menu:
+                    if not self._restart_pogo(mitm_mapper=self._mitm_mapper):
+                        # TODO: put in loop, count up for a reboot ;)
+                        raise InternalStopWorkerException
 
                 self._turn_map(self._delay_add)
                 time.sleep(1)
@@ -809,7 +824,7 @@ class WorkerQuests(MITMBase):
             # proto has previously been received, let's check the timestamp...
             # TODO: int vs str-key?
             latest_proto = latest.get(proto_to_wait_for, None)
-            latest_timestamp = latest_proto.get("timestamp", 0) + 5000
+            latest_timestamp = latest_proto.get("timestamp", 0) + 1000
             # ensure a small timedelta because pogo smts loads data later then excepted
             if latest_timestamp >= timestamp:
                 # TODO: consider reseting timestamp here since we clearly received SOMETHING
